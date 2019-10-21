@@ -7,6 +7,10 @@ export default LoginTypeView = (props) => {
     return (
         <View style={styles.container}>
           <Text>Validar carona</Text>
+
+        <View style={styles.container}>
+          
+        </View>
         </View>
     );
 }
