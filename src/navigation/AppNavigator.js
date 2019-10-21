@@ -4,7 +4,13 @@ import { createAppContainer } from 'react-navigation';
 import HomeScreenView from '../views/HomeScreen/HomeScreen';
   
   const AppRouteConfigs = createStackNavigator({
-    HomeScreen: { screen: HomeScreenView }
+    HomeScreen: {
+      screen: HomeScreenView,
+      navigationOptions: ({ navigation }) => ({
+          header: null
+      })
+    },
+
   });
   
   export default (AppContainer = createAppContainer(AppRouteConfigs)); 

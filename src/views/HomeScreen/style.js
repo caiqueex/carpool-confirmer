@@ -1,10 +1,23 @@
-import { StyleSheet } from 'react-native';
+import { StyleSheet, PixelRatio } from 'react-native';
+
+const textScale = ( 1 / PixelRatio.get() ) + 1;
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     display: 'flex',
-    backgroundColor: 'red',
+    alignItems: 'center',
+    // justifyContent: 'center',
+  },
+  textValidarCarona: {
+  fontSize: 40
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    top: 50
   }
 });
 
