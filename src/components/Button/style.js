@@ -7,14 +7,15 @@ export default StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         height: 30 * textScale,
-        width: '40%',
+        width: '45%',
         elevation: 5,
-        backgroundColor: 'blue',
+        backgroundColor: 'white',
+        borderWidth: 1,
         shadowOffset: { width: 1.5, height: 1.5 },
         shadowOpacity: 0.7,
         shadowColor: 'gray',
     },
     buttonText: {
-        color: 'white',
+        color: 'black',
     },
 });

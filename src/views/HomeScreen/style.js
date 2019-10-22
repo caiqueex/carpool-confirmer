@@ -5,10 +5,10 @@ const textScale = ( 1 / PixelRatio.get() ) + 1;
 
 const styles = StyleSheet.create({
   container: {
+    top: 50,
     flex: 1,
     display: 'flex',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
   textValidarCarona: {
   fontSize: 40
@@ -18,6 +18,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     top: 50
+  },
+  qrCode: {
+    top: 100,
   }
 });
 
