@@ -22,8 +22,6 @@ export default HomeScreenView = (props) => {
   const [showReader, setShowReader] = useState(false);
   const [infoVerified, setInfoVerified] = useState({});
 
-
-
   const handleClickedButton = async (buttonIndex) => {
     setClickedButton(buttonIndex)
 
@@ -74,6 +72,18 @@ export default HomeScreenView = (props) => {
     console.log('dfdff')
   }
 
+  const verify = () => {
+    console.log(infoVerified)
+    Alert.alert(
+      'Distância verificada',
+      `Você está a ${infoVerified.distancia} km e a ${infoVerified.duracao.toFixed(1)} minutos de distância do motorista.`,
+      [
+        {text: 'OK'},
+      ],
+      {cancelable: false},
+    );
+  }
+
     return (
         <View style={styles.container}>
           <Text style={styles.textValidarCarona}>Validar carona</Text>
@@ -112,10 +122,11 @@ export default HomeScreenView = (props) => {
           }
 
           {clickedButton === 2 && showMap &&
+          <View style={{flex: 1, width:'100%', height: 500, alignItems: 'center'}}>
           <MapView
           initialRegion={{
-            latitude: 37.78825,
-            longitude: -122.4324,
+            latitude: myLatLong.latitude,
+            longitude: myLatLong.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -131,10 +142,11 @@ export default HomeScreenView = (props) => {
               console.log(`Started routing between ${params.origin} and ${params.destination}`);
             }}
             onReady={(result) => {
+              console.log(result)
               setInfoVerified({distancia: result.distance, duracao: result.duration});
             }}
             onError={(errorMessage) => {
-              console.log('GOT AN ERROR');
+              console.log({latitude: infosReaded.latitude, longitude: infosReaded.longitude});
             }}
               origin={{latitude: myLatLong.latitude, longitude: myLatLong.longitude}}
               destination={{latitude: infosReaded.latitude, longitude: infosReaded.longitude}}
@@ -143,9 +155,10 @@ export default HomeScreenView = (props) => {
               apikey={'AIzaSyCRAHuYfUo2sDQnEyKupt_09r8N32nT8B4'}
             />
           }
-        {/* <Button title='Compartilhar localização' style={{backgroundColor: '#00BFFF', width: 200, top: 30}} onPress={() => verify()} /> */}
         </MapView>
 
+        <Button title='Compartilhar localização' style={{backgroundColor: '#00BFFF', width: 200, top: 30}} onPress={() => verify()} />
+      </View>
 
       }
 
