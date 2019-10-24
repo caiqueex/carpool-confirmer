@@ -21,6 +21,17 @@ const styles = StyleSheet.create({
   },
   qrCode: {
     top: 100,
+  },
+  centerText: {
+    flex: 1,
+    fontSize: 18,
+    padding: 32,
+    color: '#777',
+  },
+  mapa: {
+    width: '100%',
+    height: 400,
+    top: 140
   }
 });
 

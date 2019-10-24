@@ -1,40 +1,78 @@
 import React, {useState, useEffect} from 'react';
-import { Text, View, Image, Alert } from 'react-native';
+import { Text, View, Dimensions, Alert } from 'react-native';
 import styles from './style';
 import Button from '../../components/Button';
 import Geolocation from '@react-native-community/geolocation';
 import QRCode from 'react-native-qrcode-svg';
-import { RNCamera } from 'react-native-camera';
-
+import QRCodeScanner from "react-native-qrcode-scanner";
+import { format } from "date-fns";
+import { pt } from 'date-fns/locale'
+import MapViewDirections from 'react-native-maps-directions';
+import MapView from 'react-native-maps'
 
 export default HomeScreenView = (props) => {
 
+  const {width, height} = Dimensions.get('window');
+  const ASPECT_RATIO = width / height;
   const [clickedButton, setClickedButton] = useState(0);
+  const [showMap, setShowMap] = useState(false);
   const [latLong, setLatLong] = useState('');
+  const [myLatLong, setMyLatLong] = useState({});
+  const [infosReaded, setInfosReaded] = useState({});
+  const [showReader, setShowReader] = useState(false);
+  const [infoVerified, setInfoVerified] = useState({});
+
+
 
   const handleClickedButton = async (buttonIndex) => {
     setClickedButton(buttonIndex)
-    if(buttonIndex === 1) {
-      await Geolocation.getCurrentPosition(info => setLatLong(`Latitude: info.coords.latitude Longitude: info.coords.longitude`));
+
+    if(buttonIndex === 2){
+      setShowReader(true);
+      setShowMap(false);
+
+      Geolocation.getCurrentPosition(info => {
+        setMyLatLong({
+          latitude: info.coords.latitude,
+          longitude: info.coords.longitude,
+        })
+      });
     }
-    console.log(latLong)
   };
 
   useEffect(() => {
-    Geolocation.getCurrentPosition(info => setLatLong(`Latitude: info.coords.latitude Longitude: info.coords.longitude`));
-});
 
+    const formattedDate = format(new Date(), "'Dia' dd 'de' MMMM', às ' HH:mm'h'", {locale: pt});
+
+    Geolocation.getCurrentPosition(info => {
+      setLatLong(JSON.stringify({
+        latitude: info.coords.latitude,
+        longitude: info.coords.longitude,
+        data: formattedDate
+      }))
+    });
+  });
 
   const shareLocation = async () => {
     Alert.alert(
         'Localização',
-        'Localização compartilhada, escaneio o QR Code pelo celular do Caroneiro',
+        'Localização compartilhada, escaneie o QR Code pelo celular do Caroneiro para validar.',
         [
           {text: 'OK'},
         ],
         {cancelable: false},
       );
   };
+
+  const onSuccess = (e) => {
+    setShowReader(false);
+    setShowMap(true)
+    setInfosReaded(JSON.parse(e.data))
+  }
+
+  const onMapLayout = () => {
+    console.log('dfdff')
+  }
 
     return (
         <View style={styles.container}>
@@ -60,15 +98,57 @@ export default HomeScreenView = (props) => {
               </View>
             </View>
           }
-          {clickedButton === 2 && 
-        <RNCamera
-        ref={camera => { this.camera = camera }}
-        type={RNCamera.Constants.Type.back}
-        autoFocus={RNCamera.Constants.AutoFocus.on}
-        flashMode={RNCamera.Constants.FlashMode.off}
-        permissionDialogTitle={'Permission to use camera'}
-        permissionDialogMessage={'We need your permission to use your camera phone'}
-      />}
+          {clickedButton === 2 && showReader && 
+          <QRCodeScanner
+            onRead={onSuccess}
+            showMarker={true}
+            checkAndroid6Permissions={true}
+            bottomContent={
+              <View>
+                <Text style={styles.centerText}>Leia o QR code do motorista.</Text>
+                </View>
+            }
+          />
+          }
+
+          {clickedButton === 2 && showMap &&
+          <MapView
+          initialRegion={{
+            latitude: 37.78825,
+            longitude: -122.4324,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          style={styles.mapa}
+          onLayout={onMapLayout}>
+          
+          <MapView.Marker coordinate={{latitude: myLatLong.latitude, longitude: myLatLong.longitude}} />
+          <MapView.Marker coordinate={{latitude: infosReaded.latitude, longitude: infosReaded.longitude}} />
+                    
+          {true &&
+            <MapViewDirections
+            onStart={(params) => {
+              console.log(`Started routing between ${params.origin} and ${params.destination}`);
+            }}
+            onReady={(result) => {
+              setInfoVerified({distancia: result.distance, duracao: result.duration});
+            }}
+            onError={(errorMessage) => {
+              console.log('GOT AN ERROR');
+            }}
+              origin={{latitude: myLatLong.latitude, longitude: myLatLong.longitude}}
+              destination={{latitude: infosReaded.latitude, longitude: infosReaded.longitude}}
+              strokeWidth={3}
+              strokeColor='hotpink'
+              apikey={'AIzaSyCRAHuYfUo2sDQnEyKupt_09r8N32nT8B4'}
+            />
+          }
+        {/* <Button title='Compartilhar localização' style={{backgroundColor: '#00BFFF', width: 200, top: 30}} onPress={() => verify()} /> */}
+        </MapView>
+
+
+      }
+
         </View>
     );
 }
